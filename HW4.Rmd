@@ -23,150 +23,189 @@ Problems:
 1. Create the vectors:
 a) (1,2,3,...,19,20)
 ```{r}
-a<-c(1:20)
-a
+#we will creat a variable a represent the vector by using function c
+a<-c(1:20) #define a who contains the sequences of numbers from 1 to 20
+a #output a 
 ```
 b) (20,19,...,2,1)
 ```{r}
-b<-c(20:1)
-b
+#we will creat a variable b represent the vector by using function c
+b<-c(20:1) #define b who contains the sequences of numbers from 20 to 1
+b #output b
 ```
 c) (1,2,3,...,19,20,19,18,...,2,1)
 ```{r}
-c<-c(1:20,19:1)
-c
+#we will creat a variable c represent the vector by using function c
+c<-c(1:20,19:1) #define c who contains the sequences of numbers from 1 to 20 followed by sequences of numbers from 19 to 1
+c #output c
 ```
 d) (4, 6, 3) and assign it to the name tmp.
 ```{r}
-tmp<-c(4,6,3)
-tmp
+#we will creat the variable tmp represent the vector by using function c
+tmp<-c(4,6,3) #define tmp who contains the numbers 4,6,3 in order
+tmp #output tmp
 ```
 For parts (e), (f) and (g) look at the help for the function rep.
 e) (4,6,3, 4,6,3,...,4,6,3) where there are 10 occurrences of 4.
 ```{r}
-e<-c(rep(tmp,10))
-e
+#we will creat the variable e represent the vector by using function c
+e<-c(rep(tmp,10)) #define the value of e and use function rep to repeat tmp 10 times in e
+e #output e
 ```
 f) (4,6,3, 4,6,3,...,4,6,3,4) where there are 11 occurrences of 4, 10
 occurrences of 6 and 10 occurrences of 3.
 ```{r}
-f<-c(rep(tmp,l=31))
-f
+#we will creat the variable f represent the vector by using function c
+f<-c(rep(tmp,l=31)) #define the value of f and use function rep to repeat tmp in f until the length of f is 31
+f #output f
 ```
 g) (4,4,...,4,6,6,...,6,3,3,...,3) where there  are 10 occurrences of 4, 20 occurrences of 6 and 30 occurrences of 3.
 ```{r}
-g<-c(rep(tmp,times=c(10,20,30)))
-g
+#we will creat the variable g represent the vector by using function c
+g<-c(rep(tmp,times=c(10,20,30))) #define the value of g and use function rep to let 4 repeat 10 times, 6 repeat 20 times and 3 repeat 30 times
+g #output g
 ```
 2. Create a vector of the values of e^xcos(x) at x=3,3.1,3.2,...,5.9,6.
 ```{r}
-x<-seq(3,6,by=0.1) 
+#first create the variable x and then define a variable y represent the vector of the values of e^xcos(x)
+x<-seq(3,6,by=0.1) #define the value of x as the sequences of numbers from 3 to 6, the incremeny is 0.1
 y<-exp(x)*cos(x) #let y be the value of e^xcos(x)
 y #output y
 ```
 3. Create the following vectors:
 a) (0.1^3*0.2^1,0.1^6*0.2^4,0.1^9*0.2^7,...,0.1^36*0.2^34)
 ```{r}
-a3<-(0.1^seq(3,36,by=3))*(0.2^seq(1,34,by=3))
-a3
+#we will creat a variable a3 represent the vector
+v1<-seq(3,36,by=3) #create v1 represent the power of 0.1, the value of v1 is the sequences of numbers from 3 to 36, the incremeny is 3
+v2<-seq(1,34,by=3) #create v2 represent the power of 0.2, the value of v2 is the sequences of numbers from 1 to 34, the incremeny is 3
+a3<-(0.1^v1)*(0.2^v2) #let a3 be the values of (0.1^v1)*(0.2^v2) 
+a3 #output a3
 ```
 b) (2,2^2/2,2^3/2,...,2^25/25)
 ```{r}
-b3<-(2^(1:25))/(1:25)
-b3
+#we will creat a variable b3 represent the vector
+v3<-c(1:25) #create v3 who contians the sequences of numbers from 1 to 25
+b3<-(2^v3)/v3 #let a3 be the values of (2^v3)/v3
+b3 #output b3
 ```
 4. Calculate the following: 
 a) sum of (i^3+4i^2), i=10~100
 ```{r}
-a4<-sum((10:100)^3+4*(10:100)^2)
-a4
+#we will creat a variable a4 represent the value
+i1<-c(10:100) #create i1 who contians the sequences of numbers from 10 to 100
+a4<-sum(i1^3+4*i1^2) #let a4 be the sum of the values of (i1^3+4*i1^2)
+a4 #output a4
 ```
 b) sum of (2^i/i+3^i/i^2), i=1~25
 ```{r}
-b4<-sum(2^(1:25)/(1:25)+3^(1:25)/(1:25)^2)
-b4
+#we will creat a variable b4 represent the value
+i2<-c(1:25) #create i2 who contians the sequences of numbers from 1 to 25
+b4<-sum(2^i2/i2+3^i2/i2^2) #let b4 be the sum of the values of (2^i2/i2+3^i2/i2^2)
+b4 #output b4
 ```
 5. Use the function paste to create the following character vectors of length 30:
-a) ("label1","label2",.....,"label30").Note that there is a single space between label and the number following.
+a) ("label 1","label 2",.....,"label 30").Note that there is a single space between label and the number following.
 ```{r}
-paste("label",1:30)
+#we will creat a variable a5 represent the character vector
+a5<-paste("label",1:30) #define a5 and it will contain the sequence of "label" with a number from 1 to 30 in order (have space between)
+a5 #output a5
 ```
 b) ("fn1", "fn2", ..., "fn30"). In this case, there is no space between fn and the number following.
 ```{r}
-paste("fn",1:30,sep="")
+#we will creat a variable b5 represent the character vector
+b5<-paste("fn",1:30,sep="") #define a5 and it will contain the sequence of "fn" with a number from 1 to 30 in order, and change each pair of "fn" and number to string (no space between)
+b5 #output b5
 ```
 6. Execute the following lines which create two vectors of random integers which are chosen with replacement from the integers 0, 1,..., 999. Both vectors have length 250.
 ```{r}
-set.seed(50)
-xVec <- sample(0:999, 250, replace=T) 
-yVec <- sample(0:999, 250, replace=T)
+set.seed(50) #set seed be 50 to make sure the random result are the same
+xVec <- sample(0:999, 250, replace=T) #create xVec by randomly selected 250 integers between 0 to 999 with replacement
+yVec <- sample(0:999, 250, replace=T) #create yVec by randomly selected 250 integers between 0 to 999 with replacement
 ```
 Suppose x=(x1,x2,...,xn) denotes the vector xVec and y=(y1,y2,...,yn) denotes the vector yVec.
 a) Create the vector (y2-x1,...,yn-x(n-1))
 ```{r}
-a6<-yVec[-1]-xVec[-length(xVec)]
-a6
+a6<-c() #creat a variable a6 represent the vector
+for(i in 1:249){a6[i]<-yVec[i+1]-xVec[i]} #use for loop to go through from the fisrt value to the last in a6, define the values to be yVec(i+1)-xVec(i)
+a6 #putput a6
 ```
 b) Create the vector (sin(y1)/cos(x2),sin(y2)/cos(x3),...,sin(y(n-1))/cos(xn))
 ```{r}
-b6<-sin(yVec[-length(yVec)]) / cos(xVec[-1])
-b6
+b6<-c() #creat a variable b6 represent the vector
+for (i in 1:249){b6[i]<-sin(yVec[i]) / cos(xVec[i+1])} #use for loop to go through from the fisrt value to the last in b6, define the values to be sin(yVec(i) / cos(xVec(i+1))
+b6 #output b6
 ```
 c) Create the vector (x1+2x2-x3,...,x(n-2)+2x(n-1)-xn)
 ```{r}
-c6<-xVec[-c(249,250)]+2*xVec[-c(1,250)]-xVec[-c(1,2)]
-c6
+c6<-c() #creat a variable c6 represent the vector
+for (n in 1:248){c6[n]<-xVec[n]+2*xVec[n+1]-xVec[n+2]} #use for loop to go through from the fisrt value to the last in c6, define the values to be xVec(n)+2*xVec(n+1)-xVec(n+2)
+c6 #output c6
 ```
 d) Calculate the sum of e^(-x(i+1))/(xi+10), i=1~n-1
 ```{r}
-d6<-sum(exp(-xVec[-1])/(xVec[-length(xVec)]+10))
-d6
+d6<-c() #creat a variable d6 represent the vector and get the sum of the values
+for (i in 1:249){d6[i]<-(exp(-xVec[i+1])/(xVec[i]+10))} #use for loop to go through from the fisrt value to the last in d6, define the values equal to e^(-x(i+1))/(xi+10)
+sum(d6) #output the sum of d6
 ```
 7. This question uses the vectors xVec and yVec created in the previous question and the functions sort, order, mean, sqrt, sum and abs.
 a) Pick out the values in yVec which are > 600.
 ```{r}
-a7<-yVec[yVec>600]
-a7
+#we will creat a variable a7 represent the vector
+a7<-yVec[yVec>600] #Pick out the values in yVec that >600 and put it in a7
+a7 #output a7
 ```
 b) What are the index positions in yVec of the values which are > 600?
 ```{r}
-which(yVec>600)
+#we will creat a variable b7 represent the vector for the index positions
+b7<-which(yVec>600) #use function which to find the position of the value that >600 in yVec
+b7 #output b7
 ```
 c) What are the values in xVec which correspond to the values in yVec which are > 600? (By correspond, we mean at the same index
 positions.)
 ```{r}
-c7<-xVec[yVec>600]
-c7
+#we will creat a variable c7 represent the vector for the values in xVec which correspond to the values in yVec which are > 600
+c7<-xVec[yVec>600] #put the values of xVec that have correspond positions to yVec>600 into c7
+c7 #output c7
 ```
 d) Create the vector (|x1-(x1+...+xn)/n|^(1/2), |x2-(x1+...+xn)/n|^(1/2),...,|xn-(x1+...+xn)/n|^(1/2)
 ```{r}
-d7<-sqrt(abs(xVec-mean(xVec)))
-a7
+#we will creat a variable d7 represent the vector
+d7<-sqrt(abs(xVec-mean(xVec))) #let d7 equal to the values of 
+a7 #output d7
 ```
 e) How many values in yVec are within 200 of the maximum value of
 the terms in yVec?
 ```{r}
-e7<-sum( yVec>max(yVec)-200 )
-e7
+#we will creat a variable e7 represent the vector
+e7<-sum(yVec>max(yVec)-200) #use function sum to count the number of yVec that are larger than max(yVec)-200
+e7 #output e7
 ```
 f) How many numbers in xVec are divisible by 2? (Note that the mod
 operator is denoted %%.)
 ```{r}
-f7<-sum(xVec%%2==0)
-f7
+#we will creat a variable f7 represent the vector
+f7<-sum(xVec%%2==0) #use function sum to count when the numbers in vVec are divisible by 2, xVec%%2 should equal to 0 
+f7 #output f7
 ```
-g) Sort the numbers in the vector xVec in the order of increasing valuesin yVec.
+g) Sort the numbers in the vector xVec in the order of increasing values in yVec.
 ```{r}
-g7<-xVec[order(yVec)]
-g7
+#we will creat a variable g7 represent the vector
+g7<-xVec[order(yVec)] #let g7 be the numbers in xVec that sort by the order of increasing values in yVec
+g7 #output g7
 ```
 h) Pick out the elements in yVec at index positions 1,4,7,10,13,...
 ```{r}
-h7<-yVec[c(T,F,F)]
-h7
+#we will creat a variable h7 represent the vector
+h<-seq(1,250,by=3) #create a variable h which are the index positions, using function seq to make the numbers be 1 to 250, the incremeny is 3
+h7<-yVec[h] #let h7 be the yVec elements at the index positions
+h7 #output h7
 ```
 8. By using the function cumprod or otherwise, calculate:
 1+2/3+(2/3*4/5)+(2/3*4/5*6/7)+...+(2/3*4/5...*38/39)
 ```{r}
-1+sum(cumprod(seq(2,38,b=2)/seq(3,39,b=2)))
+1+sum(cumprod(seq(2,38,by=2)/seq(3,39,by=2))) 
+#seq(2,38,by=2) are the numbers from 2 to 38, the incremeny is 2
+#seq(3,39,by=2) are the numbers from 3 to 39, the incremeny is 2
+#use function cumprod to calculate the cumulative product from 2/3 to (2/3*4/5...*38/39)
+#use sum to calculate the sum of all cumulative products
 ```
