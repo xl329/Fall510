@@ -170,7 +170,7 @@ c7 #output c7
 d) Create the vector (|x1-(x1+...+xn)/n|^(1/2), |x2-(x1+...+xn)/n|^(1/2),...,|xn-(x1+...+xn)/n|^(1/2)
 ```{r}
 #we will creat a variable d7 represent the vector
-d7<-sqrt(abs(xVec-mean(xVec))) #let d7 equal to the values of 
+d7<-sqrt(abs(xVec-mean(xVec))) #let d7 equal to the values of square root of absolute value of xVec minus mean value of xVec
 a7 #output d7
 ```
 e) How many values in yVec are within 200 of the maximum value of
