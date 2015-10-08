@@ -27,7 +27,8 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 numscol<-function(dataframe){ #create a function called numscol with an input data frame variable called dataframe in the function
   nums<-dataframe[sapply(dataframe,is.numeric)] #using "is.numeric" in sapply() to choose only numberic columns in dataframe, and create a variable nums that only contains those numberic columns in dataframe 
 } #finish function
-require(ggplot2) #load ggplot2 package to get diamonds dataframe
+#assume we just open the Rstudio, need to require packages
+require(ggplot2) #load ggplot2 package to get diamonds data frame
 data(diamonds) #load diamonds data frame
 print(numscol(diamonds)) #test numscol function by using diamonds data frame and output the numeric columns by using print()
 ```
@@ -37,41 +38,46 @@ print(numscol(diamonds)) #test numscol function by using diamonds data frame and
 pearson_cor<-function(dataframe){ #create a function called pearson_cor with an input data frame variable called dataframe in the function
   Pair_of_variables<-c() #create a variable Pair_of_variables, will put pair of variable names in it
   Pearson_cor_coeff<-c() #create a variable Pair_of_variables, will put corresponding Pearson correlation coefficient in it
-  dataframenum<-numscol(dataframe) #create a variable dataframenum that contains all numeric colomn names in dataframe by using the numscol() we defined above
-  n=1 #create a variable n that will represent positions in Pair_of_variables and Pearson_cor_coeff, we will use it to go through all positions in Pair_of_variables and Pearson_cor_coeff, let it equal to 1 first
-  for (i in 1:(ncol(dataframenum)-1)){ #use for loop to go through from the first colomn name to the penult in dataframe
-    for (j in (i+1):ncol(dataframenum)){ #use for loop to go through from the i+1th colomn name to the last in dataframe
+  dataframenum<-numscol(dataframe) #create a variable dataframenum that contains all numeric column names in dataframe by using the numscol() we defined above
+  n=1 #create a variable n that will represent position in Pair_of_variables and Pearson_cor_coeff, we will use it to go through all positions in Pair_of_variables and Pearson_cor_coeff, let it equal to 1 first
+  for (i in 1:(ncol(dataframenum)-1)){ #use for loop to go through from the first column name to the penult in dataframenum
+    for (j in (i+1):ncol(dataframenum)){ #use for loop to go through from the i+1th column name to the last in dataframenum
       Pair_of_variables[n]  <- paste(colnames(dataframenum)[i],"-",colnames(dataframenum)[j],sep="") #using paste() to write pair of variable names in a single string separated by a -, and put into Pair_of_variables
-      Pearson_cor_coeff[n]  <- cor(dataframenum[ ,i],dataframenum[ ,j],method="pearson") #using cor() to calculate the Pearson correlation coefficient between the ith colomn and jth colomn in dataframenum, and write dwon the result in Pearson_cor_coeff
+      Pearson_cor_coeff[n]  <- cor(dataframenum[ ,i],dataframenum[ ,j],method="pearson") #using cor() to calculate the Pearson correlation coefficient between the ith column and jth column in dataframenum, and write down the result in Pearson_cor_coeff
       n=n+1 #add 1 to n in order to go to the next positions in Pair_of_variables and Pearson_cor_coeff
     } #finish second for loop
   }#finish first for loop
   newdata<-data.frame(Pair_of_variables, Pearson_cor_coeff) #create a data frame called newdata, put Pair_of_variables and Pearson_cor_coeff into it 
   newdata #output newdata 
 } #finish function
-require(ggplot2) #load ggplot2 package to get diamonds dataframe
-data(diamonds) #load diamonds data frame
+#if we just open the Rstudio, need to require packages and don't forget to open the numscol() function
+#require(ggplot2) #load ggplot2 package to get diamonds data frame
+#data(diamonds) #load diamonds data frame
 pearson_cor(diamonds) #test pearson_cor() by using diamonds data
 ```
 3. Create and label a scatter plot for every pair of numeric variables. Add a title to the plot that contains the calculated Pearson correlation coefficient of variables contained in the plot. (HINT: You should figure out how to extract all numeric columns from a data frame so your method can be used on any data frame.)
 ```{r}
-sca_plot<-function(dataframe){
-  require(ggplot2)
-  require(grid)
-  require(gridExtra)
-  dataframep<-numscol(dataframe)
-  splotall<-list()
-  n=1
-  for (i in 1:(ncol(dataframep)-1)){
-    for (j in (i+1):ncol(dataframep)){
-      plotdata<-data.frame(dataframep[,i],dataframep[,j])
-      colnames(plotdata)<-c(colnames(dataframep)[i],colnames(dataframep)[j])
-      xyPCorr<-cor(dataframep[,i],dataframep[,j],method="pearson")
-      splotall[[n]] <- (ggplot(plotdata,aes_string(x=colnames(dataframep)[i],y=colnames(dataframep)[j]))+geom_point()+ggtitle(paste("Correlation between",colnames(dataframep)[i],"and",colnames(dataframep)[j],":",xyPCorr)))
-      n=n+1
-    }
-  }
-  do.call(grid.arrange,splotall)
-}
-sca_plot(diamonds)
+#We will create a function to output all plots. In the funtion, we will require gridExtra package and use do.call() output all plots together as a whole, because par() can't be used in ggplot2. And in order to make sure the function can be used on any data frame, we will require ggplot2 and grid as well. The for loops will help us create plot between every pair of numeric vairables and write the plot into a varible. It will take some time for outputting plots. The plots don't look good in Knit HTML version, but it's ok in the R or RStudio plots output area
+sca_plot<-function(dataframe){ #create a function called sca_plot with an input data frame variable called dataframe in the function
+  require(ggplot2) #load ggplot2 package to get diamonds data frame
+  require(grid) #load grid package to create plot
+  require(gridExtra) #load gridExtra package in order to integrate all plots
+  dataframep<-numscol(dataframe)#create a variable dataframep that contains all numeric column names in dataframe by using the numscol() we defined above
+  splotall<-list() #create a variable splotall for a list of plots, make it empty, we will use it to put all plots
+  n=1 #create a variable n that will represent position in splotall, we will use it to go through all positions in splotall, let it equal to 1 first
+  for (i in 1:(ncol(dataframep)-1)){ #use for loop to go through from the first column name to the penult in dataframep
+    for (j in (i+1):ncol(dataframep)){ #use for loop to go through from the i+1th column name to the last in dataframep
+      plotdata<-data.frame(dataframep[,i],dataframep[,j]) #create a variable plotdata and put the ith and jth columns of dataframep in it. we just want to use the data to create plots in this iteration, so the plotdata will be refresh in the next iteration.
+      colnames(plotdata)<-c(colnames(dataframep)[i],colnames(dataframep)[j]) #make the column names of plotdata be the column names of ith and jth column in dataframep
+      xyPCorr<-cor(dataframep[,i],dataframep[,j],method="pearson") #using cor() to calculate the Pearson correlation coefficient between the ith column and jth column in dataframep, and write down the result in xyPCorr
+      splotall[[n]] <- (ggplot(plotdata,aes_string(x=colnames(dataframep)[i],y=colnames(dataframep)[j]))+geom_point()+ggtitle(paste("Correlation between",colnames(dataframep)[i],"and",colnames(dataframep)[j],":",xyPCorr))) #create the scatter plot for plotdata, the x label is ith column name in dataframep, the y label is it jth column name in dataframep, the geoms are points, the title is "Correlation between ith column name of dataframep and jth column name of dataframep:xyPCorr"
+      n=n+1 #add 1 to n in order to go to the next position in splotall
+    } #finish second loop
+  } #finish first loop
+  do.call(grid.arrange,splotall) #Output all plots as whole and display on grid.arrange by using do.call()
+} #finish function
+#if we just open the Rstudio, need to require packages and don't forget to open the numscol() function
+#require(ggplot2) #load ggplot2 package to get diamonds data frame
+#data(diamonds) #load diamonds data frame
+sca_plot(diamonds) #test sca_plot() by using diamonds data frame
 ```
