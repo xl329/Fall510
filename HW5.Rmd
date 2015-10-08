@@ -1,0 +1,77 @@
+---
+title: "HW5"
+author: "Xinyue Li"
+date: "2015年10月5日"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+1. Figure out how to generically extract all numeric columns from any data frame so the method you develop can be used on any data.
+```{r}
+#In order to make sure the method can be used on any data, we will create a function to generically extract all numeric columns from any data frame.
+numscol<-function(dataframe){ #create a function called numscol with an input data frame variable called dataframe in the function
+  nums<-dataframe[sapply(dataframe,is.numeric)] #using "is.numeric" in sapply() to choose only numberic columns in dataframe, and create a variable nums that only contains those numberic columns in dataframe 
+} #finish function
+require(ggplot2) #load ggplot2 package to get diamonds dataframe
+data(diamonds) #load diamonds data frame
+print(numscol(diamonds)) #test numscol function by using diamonds data frame and output the numeric columns by using print()
+```
+2. Create a data frame that contains each pair of variable names in the first column in a single string separated by a -, e.g. for the variables x and y, you should form the string “x-y” (HINT: Look at the help provided for the paste function) and their corresponding Pearson correlation coefficient in the second column. (HINT: There is a function that calculates correlation coefficients – look carefully at what is returned and optimize how you extract the correlation coefficients). Do not repeat any pairs.
+```{r}
+#We will create a function to solve this problem. In the function, we will use for loop to create two variables, one is for pair of variable names and the other is the corresponding pearson correlation coefficient. Then, put the two variables into a data frame.
+pearson_cor<-function(dataframe){ #create a function called pearson_cor with an input data frame variable called dataframe in the function
+  Pair_of_variables<-c() #create a variable Pair_of_variables, will put pair of variable names in it
+  Pearson_cor_coeff<-c() #create a variable Pair_of_variables, will put corresponding Pearson correlation coefficient in it
+  dataframenum<-numscol(dataframe) #create a variable dataframenum that contains all numeric colomn names in dataframe by using the numscol() we defined above
+  n=1 #create a variable n that will represent positions in Pair_of_variables and Pearson_cor_coeff, we will use it to go through all positions in Pair_of_variables and Pearson_cor_coeff, let it equal to 1 first
+  for (i in 1:(ncol(dataframenum)-1)){ #use for loop to go through from the first colomn name to the penult in dataframe
+    for (j in (i+1):ncol(dataframenum)){ #use for loop to go through from the i+1th colomn name to the last in dataframe
+      Pair_of_variables[n]  <- paste(colnames(dataframenum)[i],"-",colnames(dataframenum)[j],sep="") #using paste() to write pair of variable names in a single string separated by a -, and put into Pair_of_variables
+      Pearson_cor_coeff[n]  <- cor(dataframenum[ ,i],dataframenum[ ,j],method="pearson") #using cor() to calculate the Pearson correlation coefficient between the ith colomn and jth colomn in dataframenum, and write dwon the result in Pearson_cor_coeff
+      n=n+1 #add 1 to n in order to go to the next positions in Pair_of_variables and Pearson_cor_coeff
+    } #finish second for loop
+  }#finish first for loop
+  newdata<-data.frame(Pair_of_variables, Pearson_cor_coeff) #create a data frame called newdata, put Pair_of_variables and Pearson_cor_coeff into it 
+  newdata #output newdata 
+} #finish function
+require(ggplot2) #load ggplot2 package to get diamonds dataframe
+data(diamonds) #load diamonds data frame
+pearson_cor(diamonds) #test pearson_cor() by using diamonds data
+```
+3. Create and label a scatter plot for every pair of numeric variables. Add a title to the plot that contains the calculated Pearson correlation coefficient of variables contained in the plot. (HINT: You should figure out how to extract all numeric columns from a data frame so your method can be used on any data frame.)
+```{r}
+sca_plot<-function(dataframe){
+  require(ggplot2)
+  require(grid)
+  require(gridExtra)
+  dataframep<-numscol(dataframe)
+  splotall<-list()
+  n=1
+  for (i in 1:(ncol(dataframep)-1)){
+    for (j in (i+1):ncol(dataframep)){
+      plotdata<-data.frame(dataframep[,i],dataframep[,j])
+      colnames(plotdata)<-c(colnames(dataframep)[i],colnames(dataframep)[j])
+      xyPCorr<-cor(dataframep[,i],dataframep[,j],method="pearson")
+      splotall[[n]] <- (ggplot(plotdata,aes_string(x=colnames(dataframep)[i],y=colnames(dataframep)[j]))+geom_point()+ggtitle(paste("Correlation between",colnames(dataframep)[i],"and",colnames(dataframep)[j],":",xyPCorr)))
+      n=n+1
+    }
+  }
+  do.call(grid.arrange,splotall)
+}
+sca_plot(diamonds)
+```
