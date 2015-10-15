@@ -1,0 +1,71 @@
+---
+title: "TEST1"
+author: "Xinyue Li"
+date: "2015年10月15日"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Using the diamonds data:
+```{r}
+#get ready
+require(ggplot2) #load ggplot2 package to get diamonds data frame
+#require(datasets) #mtcars is in package datasets, just make sure we have mtcars
+data(diamonds) #load diamonds data frame
+```
+1. Add a logical column to diamonds based on the ratio of 1’s and 0’s in the mtcars$vs variable. The variable in mtcars is numeric meaning that you will need to create a logical equivalent, extend it to the same length as diamonds and add it to diamonds data frame.
+```{r}
+#According to the requirements, we will fisrt create a varibale logicalcol represents the logical column we need to insert. Then calculate the ratio of 1 in the mtcars$vs variable. Then create a variable called trail and use rbinom() to randomly input 0 and 1 into trail based on the ratio of 1 we calculated. Using for loop to input true or false in logicalcol based on the position of 1s and 0s in trail. At last, put the logical column into diamonds.
+  logicalcol<-c() #create variable logicalcol, and let it be empty first
+  ratioT=length(mtcars$vs[mtcars$vs==1])/length(mtcars$vs) #Calculate the ratio of 1 in the mtcars$vs variable, and put it in variable ratioT
+  trail<-rbinom(nrow(diamonds),1,ratioT) #create variable trail and use rbinom() to randomly input 0 and 1 into trail based on ratioT, and let the length of trail equal to the length of diamonds
+  for (i in 1:(length(trail))){ #using for loop to go through from the frist value to the last in trail
+    if (trail[i]==1){ #using if() to check if trail[i] equals to 1
+      logicalcol[i]=TRUE #if trail[i] equals to 1, write TURE in logicalcol[i]
+    } #finish if(){}
+    else{
+      logicalcol[i]=FALSE #if trail[i] doesn't equal to 1, write FALSE in logicalcol[i]
+    } #finish eles{}
+  } #finish for loop
+  newdiamonds<-data.frame(diamonds,logicalcol) #create a new data frame called newdiamonds and put diamonds and logicalcol into it
+  summary(newdiamonds$logicalcol) #test logicalcol in newdiamonds 
+  length(newdiamonds$logicalcol[newdiamonds$logicalcol==TRUE])/nrow(newdiamonds) #check the ratio of TRUE in newdiamonds$logicalcol. It might be a little different from ratioT=0.4375, because we randomly choose 0 and 1 to put into trail, there will have error value.
+```
+2. Figure out how to generically extract all factor and logical columns from any data frame so the method you develop can be used on any data.
+```{r}
+#We will create a function factornlogical() to extract all factor and logical columns from any data frame and output them in a new data frame.
+factornlogical<-function(dataframe){ #create the function factornlogical() with input data frame called dataframe
+  factorcol<-dataframe[sapply(dataframe,is.factor)] #extract factor columns in dataframe by using sapply() and put the factor columns in data frame factorcol
+  logcol<-dataframe[sapply(dataframe,is.logical)] #extract logical columns in dataframe by using sapply() and put the logical columns in data frame logcol
+  fnl<-data.frame(factorcol,logcol) #put factorcol and logcol together into data frame fnl
+  return(fnl) #output fnl
+}
+summary(factornlogical(diamonds)) #test factornlogical() by using data frame diamonds. Because the output of factornlogical() is too long, we just use summary() to see the summary situation of output
+summary(factornlogical(newdiamonds)) #test factornlogical() by using data frame newdiamonds. Because the output of factornlogical() is too long, we just use summary() to see the summary situation of output
+```
+3. Plot a gray bar graph for every factor and logical variable.
+```{r}
+#We will create a function plot3() to draw the list of plot. Using for loop function and factornlogical() to draw plots for every factor and logical variable.
+plot3<-function(dataframe){ #create the function plot3() with input value dataframe
+  plotlist<-list() #create a variable plotlist for a list of plots, make it empty, we will use it to put all plots
+  for(i in 1:ncol(factornlogical(dataframe))){ #using for loop to go through all factor and logical variables in dataframe
+    plotlist[[i]]<-ggplot(factornlogical(dataframe),aes_string(x=colnames(factornlogical(dataframe))[i]))+geom_bar(fill="grey")+ggtitle(paste(colnames(factornlogical(dataframe))[i],"distribution")) #put a gray bar graph for ith column in factornlogical(dataframe) into plotlist[[i]], label xlabel and write title
+  } #finish for loop
+  return(plotlist) #output plotlist
+} #finish function
+plot3(newdiamonds) #check plot3() with data frame newdiamonds
+```
+4. Create a list of frequency tables that contains one table for each categorical and logical variable in the data frame.
+```{r}
+#We will create a function table4() to create the list of tables. Using for loop function and factornlogical() to create tables for each categorical and logical variable in data frame.
+table4<-function(dataframe){ #create the function table4() with input value dataframe
+  tablelist<-list() #create a variable tablelist for a list of tables, make it empty, we will use it to put all tables
+  for (i in 1:ncol(factornlogical(dataframe))){ #using for loop to go through all categoricals and logical variables in dataframe
+    tablelist[[i]]<-as.data.frame(table(factornlogical(dataframe)[,i])) #using table() to give the counts of ith column in factornlogical(dataframe), convert it to a data frame and put into tablelist[[i]]
+    names(tablelist[[i]])[1]=colnames(factornlogical(dataframe)[i]) #using names() to retain the variable name in the corresponding column name
+  } #finish for loop
+  return(tablelist) #output tablelist
+} #finish function
+table4(newdiamonds) #check table4() with data frame newdiamonds
+```
