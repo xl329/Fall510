@@ -1,0 +1,110 @@
+---
+title: "HW6"
+author: "Xinyue Li"
+date: "2015年10月21日"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Write an R function named explore that takes a data frame, a vector of bin sizes, and a correlation threshold as input parameters:
+1) Plot a pair of blue histograms with a vertical red line at the mean (one using counts and the other density) for every numerical variable at each bin size specified in the bin sizes input parameter. You can plot individually or as a grid. If you chose to plot as a grid, there should be separate grids for each count-bin size combination and separate grids for each density-bin size combination. For example, given 5 numeric variables and a vector of three bin sizes will generate 30 individual plots or a total of 6 grid plots (with each grid plot containing 5 subplots).
+2) Plot a gray bar graph for every categorical and binary variable.
+3) Calculate the r2 (r-square) value for every pair of numerical
+variables.
+4) Return the following in an R list:
+a. A frequency table for every categorical and binary variable 
+b. Fornumericalvariables
+i. A summary statistics table for each numerical variable
+ii. A data frame that contains each pair of variable names and the associated r-square value.
+iii. A data frame that contains each pair of variable names and correlation coefficient (Pearson) for all coefficients whose absolute value is greater than the correlation threshold (do not repeat any pairs)
+```{r}
+explore<-function(dataframe,binsize,cor_threshold){ #Define the explore function with input data dataframe, binsize and cor_threshold
+  require(grid) #load grid package for plots
+  require(ggplot2) #load ggplot2 package for plots
+  #Question 1: we will first find out the numeric varibales and then use for loop to draw the histgram by using ggplot()
+  nums<-dataframe[sapply(dataframe,is.numeric)] #using sapply() to find all numeric column and put them into variable nums
+  histlist<-list() #create a varable histlist to put histograms, let it be empty first
+  for (i in 1:length(binsize)){ #go through from the first number to the last in binsize
+    for (j in 1:(ncol(nums))){ #go through from the first column to the last in nums
+      binw<-(max(nums[,j])-min(nums[,j]))/binsize[i] #calculating binwidth for histogram by using the input binsize
+      histlist<-ggplot(nums,aes(x=nums[,j]),environment=environment()) #using ggplot to draw the plot for every numerical variable, let the ith column to be the x aesthetic and use environment parameter
+      histlist<-histlist+geom_histogram(colour="blue",fill="blue",binwidth=binw)+labs(x=colnames(nums)[j])+geom_vline(xintercept=mean(nums[,j]),colour="red") #add blue histogram with the calculated binwidth, label the x label, the y label will be counts automatically, then draw a vertical red line at the mean
+      print(histlist) #output histograms using counts
+      print(histlist+aes(y=..density..)+labs(y="density")+geom_density()) #output histograms using density and label the y label 
+    }#finish the second loop
+  }#finish the first loop
+  #Question 2: binary variables are equal to logical variables, so we just find out the logical variables. 
+  factors<-dataframe[sapply(dataframe,is.factor)] #using sapply() to find all factor columns and put them into variable factors
+  logicals<-dataframe[sapply(dataframe,is.logical)] #using sapply() to find all logical columns and put them into variable logicals
+  fnl<-data.frame(factors,logicals) #create a data frame fnl and put factors and logicals in it
+  plotlist<-list() #create a variable plotlist for a list of plots, make it empty, we will use it to put all plots
+  for(i in 1:ncol(fnl)){ #using for loop to go through all variables in fnl
+    plotlist[[i]]<-ggplot(fnl,aes_string(x=colnames(fnl)[i]),environment=environment())+geom_bar(colour="gray",fill="grey")+ggtitle(paste(colnames(fnl)[i],"distribution")) #put a gray bar graph for ith column in fnl into plotlist[[i]], label xlabel and write title, and use use environment parameter
+  } #finish for loop
+  return(plotlist) #output plotlist
+  #Question 3
+  Pair_of_variables<-c() #create a variable Pair_of_variables, will put pair of variable names in it
+  rsquared<-c() #create a variable rsquared, will put r-squared value in it
+  n=1 #create a variable n that will represent position in Pair_of_variables and rsquared, we will use it to go through all positions in Pair_of_variables and rsquared, let it equal to 1 first
+  for (i in 1:(ncol(nums)-1)){ #use for loop to go through from the first column name to the penult in dataframenum
+    for (j in (i+1):ncol(nums)){ #use for loop to go through from the i+1th column name to the last in dataframenum
+      Pair_of_variables[n]<-paste(colnames(nums)[i],"-",colnames(nums)[j],sep="") #using paste() to write pair of variable names in a single string separated by a -, and put into Pair_of_variables
+      rsquared[n]<-summary(lm(nums[,i] ~ nums[,j]))$r.squared #using summary() and lm() to get the r-squared value between two varaibles
+      n=n+1 #add 1 to n in order to go to the next positions in Pair_of_variables and rsquared
+    } #finish second for loop
+  }#finish first for loop
+  #Question 4bii
+  newdata<-data.frame(Pair_of_variables, rsquared) #create a data frame newdata and put Pair_of_variables and rsquared into it
+  return(newdata) #output newdata 
+  #Question 4a
+  tablelist<-list() #create a variable tablelist for a list of tables, make it empty, we will use it to put all tables
+  for (i in 1:ncol(fnl)){ #using for loop to go through all categoricals and binary variables in dataframe
+    tablelist[[i]]<-as.data.frame(table((fnl)[,i])) #using table() to give the counts of ith column in fnl, convert it to a data frame and put into tablelist[[i]]
+    names(tablelist[[i]])[1]=colnames(fnl[i]) #using names() to retain the variable name in the corresponding column name
+  } #finish for loop
+  print(tablelist) #output tablelist
+  #Question 4bi
+  sumtable<-list() #create a variable sumtable for a list of table, make it empty
+  for (i in 1:ncol(nums)){ #for each numeric column in the data frame
+  sumtable[[i]] <- summary(nums[,i]) #let the summary table of ith column to be the ith element in sumtable
+  }#finish foor loop
+  return(sumtable) #output sumtable
+  #Question 4biii
+  Pairofvariables<-c() ##create a variable Pairofvariables, will put pair of variable names in it
+  Pearson_cor_coeff<-c() #create a variable Pearson_cor_coeff, will put corresponding Pearson correlation coefficient in it
+  n=1 #create a variable n that will represent position in Pairofvariables and Pearson_cor_coeff, we will use it to go through all positions in Pair_of_variables and Pearson_cor_coeff, let it equal to 1 first
+  for (i in 1:(ncol(nums)-1)){ #use for loop to go through from the first column name to the penult in dataframenum
+    for (j in (i+1):ncol(nums)){ #use for loop to go through from the i+1th column name to the last in dataframenum
+      if(cor(nums[ ,i],nums[ ,j],method="pearson")>cor_threshold){ #using if() to check if the pearson correlation coefficient between ith column and jth column in nums larger than the input value cor_threshold
+        Pairofvariables[n]  <- paste(colnames(nums)[i],"-",colnames(nums)[j],sep="") #using paste() to write pair of variable names in a single string separated by a -, and put into Pair_of_variables
+        Pearson_cor_coeff[n]  <- cor(nums[ ,i],nums[ ,j],method="pearson") #using cor() to calculate the Pearson correlation coefficient between the ith column and jth column in nums, and write down the result in Pearson_cor_coeff
+        n=n+1 #add 1 to n in order to go to the next positions in Pairofvariables and Pearson_cor_coeff
+      }#finish if
+    } #finish second for loop
+  }#finish first for loop
+  perdata<-data.frame(Pairofvariables, Pearson_cor_coeff) #create a data frame called perdata, put Pairofvariables and Pearson_cor_coeff into it 
+  return(perdata) #output perdata
+}
+
+```
+5) Test your function by Using the diamonds data frame you extended to include the VS logical column, a vector of bin sizes (5, 20, 50), and a correlation threshold of 0.25. Also test your function using the mtcars data.
+```{r}
+require(ggplot2) #load ggplot2 package to get diamonds data frame
+require(datasets) #mtcars is in package datasets, just make sure we have mtcars
+data(diamonds) #load diamonds data frame
+logicalcol<-c() #create variable logicalcol, and let it be empty first
+ratioT=length(mtcars$vs[mtcars$vs==1])/length(mtcars$vs) #Calculate the ratio of 1 in the mtcars$vs variable, and put it in variable ratioT
+trail<-rbinom(nrow(diamonds),1,ratioT) #create variable trail and use rbinom() to randomly input 0 and 1 into trail based on ratioT, and let the length of trail equal to the length of diamonds
+for (i in 1:(length(trail))){ #using for loop to go through from the frist value to the last in trail
+  if (trail[i]==1){ #using if() to check if trail[i] equals to 1
+      logicalcol[i]=TRUE #if trail[i] equals to 1, write TURE in logicalcol[i]
+      } #finish if(){}
+  else{
+    logicalcol[i]=FALSE #if trail[i] doesn't equal to 1, write FALSE in logicalcol[i]
+    } #finish eles{}
+} #finish for loop
+newdiamonds<-data.frame(diamonds,logicalcol) #create a new data frame called newdiamonds and put diamonds and logicalcol into it
+explore(newdiamonds, c(5,20,50), 0.25) #test explore() by using newdiamonds
+#explore(mtcars,c(5,20,50),0.25) #test explore() by using mtcars
+```
