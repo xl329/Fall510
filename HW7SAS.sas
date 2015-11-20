@@ -2,7 +2,7 @@
 
 %let path=/folders/myfolders/Data_One;
 libname orion "/folders/myfolders/Data_One";
-/*Get ready for exercises. The first statement creates a macro variable named path and assigns it a full path to the folder containing the course data. 
+/*Get ready for exercises. The first statement creates a macro variable named path and assigns it a full path to the folder containing the course data.
 The second statement, a LIBNAME statement, associates the libref, orion, with the same data location.*/
 ￼;
 /*1. Exercises:Chapter3.2Levels1,2,andChallenge(pages3-33,34)*/
@@ -13,7 +13,7 @@ The second statement, a LIBNAME statement, associates the libref, orion, with th
     /*How many variables are in the orion.country data set? 6, because there are 6 columns.*/
     /*What is the name of the last country in the data set? South Africa */
 
-/* b.Submit a PROC CONTENTS step to generate a list of all members in the orion library.*/ 
+/* b.Submit a PROC CONTENTS step to generate a list of all members in the orion library.*/
 proc contents data=orion._all_ nods;
 run;
 /*Using data=orion._all_ nods to get a data set that has all members in the orion library.
@@ -167,8 +167,10 @@ proc print data=work.sort_sal noobs;
    sum Salary;
    where Employee_Term_Date is missing and Salary>65000;
    var Employee_ID Salary Marital_Status;
- run;
-/*Using proc print to display a subset of work.sort_sal data set grouped by Employee_Gender.  
+ run; 
+/*Using proc print to display a subset of work.sort_sal data set grouped by Employee_Gender and using sum statement to add a total and subtotals for Salary.*/
+/*Using where statement to select only employees without a value for Employee_Term_Date and earn more than $65,000.*/
+/*Using var statement to display only Employee_ID, Salary and Marital_Status columns.*/
  
 /*4.3*/
 /*level1:9.Displaying Titles and Footnotes in a Detail Report*/
@@ -176,29 +178,43 @@ proc print data=work.sort_sal noobs;
 proc print data=orion.sales noobs;
 	where Country='AU' and Job_Title contains 'Rep. IV';
 run;
+/*Using proc print to display the data*/
+/*Using where statement to select all all observations for Australian Sales Rep IVs*/
+/*Using noobs to avoid obs columns.*/
 
 /*b.Add a VAR statement to display only the variables shown in the report below.*/
 proc print data=orion.sales noobs;
    where Country='AU' and Job_Title contains 'Rep. IV';
    var Employee_ID First_Name Last_Name Gender Salary;
 run;
+/*Using var statement to display only Employee_ID, First_Name, Last_Name, Gender and Salary*/
+
 /*c.Add TITLE and FOOTNOTE statements to include the titles and footnotes shown in the report below.*/
 title1 'Australian Sales Employees';
 title2 'Senior Sales Representatives';
+/*Using title statement to create title1 and title2 as show in the report.*/
 footnote1 'Job_Title: Sales Rep. IV';
+/*Using footnote statement to create footnote1 as show in the report.*/
+
+/*d.Submit the program and verify the output. The results contain five observations as shown below.*/
 proc print data=orion.sales noobs;
    where Country='AU' and Job_Title contains 'Rep. IV';
    var Employee_ID First_Name Last_Name Gender Salary;
 run;
-title;
-footnote;
+/*Run this program again and we can find it contains title and footnote now*/
 ￼
-/*d.Submit the program and verify the output. The results contain five observations as shown below.*/
 /*e.Submit a null TITLE and null FOOTNOTE statement to clear all titles and footnotes.*/
+title; 
+/*Using null title statement to cancel all titles*/
+footnote;
+/*Using null footnote statement to cancel all titles*/
+
 /*10.Displaying Column Headings in a Detail Report*/
 /*a.Open and submit p104e10. Modify the program to define and use the following labels.Submit the program and verify the output.*/
 title 'Entry-level Sales Representatives';
+/*Using title statement to create title as show in the report.*/
 footnote 'Job_Title: Sales Rep. I';
+/*Using footnote statement to create footnote as show in the report.*/
 proc print data=orion.sales noobs label;
    where Country='US' and Job_Title='Sales Rep. I';
    var Employee_ID First_Name Last_Name Gender Salary;
@@ -207,11 +223,17 @@ proc print data=orion.sales noobs label;
          Last_Name="Last Name"
          Salary="Annual Salary";
 run;
+/*Using label statement to display descriptive column headings instead of variable names: for example,"Employee ID" instead of Employee_ID*/
 title;
+/*Using null title statement to cancel all titles*/
 footnote;
+/*Using null footnote statement to cancel all titles*/
+
 /*b.Modify the program to use a blank space as the SPLIT= character to generate two-line column headings. Submit the modified program and verify that two-line column labels are displayed.*/
 title 'Entry-level Sales Representatives';
+/*Using title statement to create title as show in the report.*/
 footnote 'Job_Title: Sales Rep. I';
+/*Using footnote statement to create footnote as show in the report.*/
 proc print data=orion.sales noobs split=' ';
    where Country='US' and Job_Title='Sales Rep. I';
    var Employee_ID First_Name Last_Name Gender Salary;
@@ -220,15 +242,21 @@ proc print data=orion.sales noobs split=' ';
          Last_Name="Last Name"
          Salary="Annual Salary";
 run;
+/*Using SPLIT= option in PROC PRINT specifies ' ' to control line breaks in column headings.*/
 title;
+/*Using null title statement to cancel all titles*/
 footnote;
+/*Using null footnote statement to cancel all titles*/
+
 /*level2:11.Writing an Enhanced Detail Report*/
 /*a.Write a program to display a subset of orion.employee_addresses as shown below. The program should sort the observations by State, City, and Employee_Name and then display the sorted observations grouped by State. The resulting report should contain 311 observations.*/
 proc sort data=orion.employee_addresses out=work.address;
    where Country='US';
    by State City Employee_Name;
 run;
+/*Using proc sort to select the US addresses in the orion.employee_addresses data set, sort the observations by State, City, and Employee_Name, and put the result into new data set work.address.*/
 title "US Employees by State";
+/*Using title statement to create title as show in exercise*/
 proc print data=work.address noobs split=' ';
    var Employee_ID Employee_Name City Postal_Code;
    label Employee_ID='Employee ID'
@@ -236,7 +264,11 @@ proc print data=work.address noobs split=' ';
          Postal_Code='Zip Code';
    by State;
 run;
-
+/*Using proc print to dispaly work.address data grouped by state without obs column, and using SPLIT= option specifies ' ' to control line breaks in column headings.*/
+/*Using label statement to display descriptive column headings instead of variable names: for example,"Employee ID" instead of Employee_ID*/
+/*Using var statement to only display Employee_ID, Employee_Name, City and Postal_Code columns*/
+title;
+/*Using null title statement to cancel all titles*/
 
 /*4. ReviewChapter5Material*/
 /*5. Exercise:Chapter5.1,2Levels1and2(pages5-10,11,24,25)*/
@@ -245,23 +277,30 @@ run;
   /*a.Open p105e01 and submit. Review the output.*/
 proc print data=orion.employee_payroll;
 run;
-
+/*Using proc print to display orion.employee_payroll data set.*/
+ 
   /*b.Modify the PROC PRINT step to display only Employee_ID, Salary, Birth_Date, and Employee_Hire_Date.*/
 proc print data=orion.employee_payroll;
    var Employee_ID Salary Birth_Date Employee_Hire_Date;
 run;
+/*Using var statement to display only Employee_ID, Salary, Birth_Date, and Employee_Hire_Date.*/
+ 
   /*c.Add a FORMAT statement to display Salary in a dollar format, Birth_Date in 01/31/2012 date style, and Employee_Hire_Date in the 01JAN2012 date style, as shown in the report below.*/
 proc print data=orion.employee_payroll;
    var Employee_ID Salary Birth_Date Employee_Hire_Date;
    format Salary dollar11.2 Birth_Date mmddyy10. 
 		  Employee_Hire_Date date9.;
 run;
+/*Using format statement to wirte:
+ Salary with a leading dollar sign, a comma that separates every three digits, and a period that separates the decimal fraction; the total format width is 11, including decimal places and special characters; the number of decimal places is 2.
+ Birth_Date with mmddyy10 format(01/31/2012); and Employee_Hire_Date with date9 format(01JAN2012).*/
 
 /*level2:2.Displaying Formatted Values in a Detail Report*/
   /*a.Write a PROC PRINT step to display the report below using orion.sales as input. Subset the observations and variables to produce the report shown below. Include titles, labels, and formats. The results contain 13 observations.*/
 title1 'US Sales Employees';
+/*Using title statement to create title1 as show in the report.*/
 title2 'Earning Under $26,000';
-
+/*Using footnote statement to create footnote as show in the report.*/
 proc print data=orion.sales label noobs;
    where Country='US' and Salary<26000;
    var Employee_ID First_Name Last_Name Job_Title Salary Hire_Date;
@@ -271,8 +310,15 @@ proc print data=orion.sales label noobs;
 		 Hire_Date='Date Hired';
    format Salary dollar10. Hire_Date monyy7.;
 run;
+/*Using proc print to display orion.sales data without obs column.*/
+/*Using where statement to select only Employee_ID First_Name Last_Name Job_Title Salary and Hire_Date columns*/
+/*Using label statement to to display descriptive column headings instead of variable names*/
+/*Using format statement to write Salary with a leading dollar sign and a comma that separates every three digits, the total format width is 10, no decimal places; and Hire_Date in monyy7 format(OCT2007).*/
 title;
+/*Using null title statement to cancel all titles*/
 footnote;
+/*Using null footnote statement to cancel all titles*/
+
 /*5.2*/
 /*level1:4.Creating User-Defined Formats*/
   /*a.Retrieve the starter program p105e04.*/
@@ -282,12 +328,15 @@ data Q1Birthdays;
    if BirthMonth le 3;
 run;
 
+
   /*b.Create a character format named $GENDER that displays gender codes as follows:*/
 proc format;
    value $gender
       'F'='Female'
       'M'='Male';
 run;
+
+ 
   /*c.Create a numeric format named MNAME that displays month numbers as follows:*/
 proc format;
    value mname
@@ -295,6 +344,8 @@ proc format;
        2='February'
        3='March';
 run;
+
+
   /*d.Add a PROC PRINT step to display the data set, applying these two user-defined formats to the Employee_Gender and BirthMonth variables, respectively.*/
 title 'Employees with Birthdays in Q1';
 proc print data=Q1Birthdays;
@@ -303,7 +354,11 @@ proc print data=Q1Birthdays;
           BirthMonth mname.;
 run; 
 title;  
+
+
   /*e.Submit the program to produce the following report. The results contain 113 observations.*/
+
+
 /*level2:5.Defining Ranges in User-Defined Formats*/
   /*a.Retrieve the starter program p105e05.*/
 proc print data=orion.nonsales;
@@ -312,12 +367,15 @@ proc print data=orion.nonsales;
    title2 'for Non-Sales Employees';
 run;
 
+
   /*b.Create a character format named $GENDER that displays gender codes as follows:*/
 proc format;
    value $gender 'F'='Female'
                  'M'='Male'
                other='Invalid code';
 run;
+ 
+ 
   /*c.Create a numeric format named SALRANGE that displays salary ranges as follows:*/
 proc format;
    value salrange .='Missing salary'
@@ -325,6 +383,8 @@ proc format;
       100000-500000='$100,000 or more'
               other='Invalid salary';
 run;
+ 
+ 
   /*d.In the PROC PRINT step, apply these two user-defined formats to the Gender and Salary variables, respectively. Submit the program to produce the following report:Partial PROC PRINT Output*/
 title1 'Salary and Gender Values';
 title2 'for Non-Sales Employees';
@@ -334,6 +394,8 @@ proc print data=orion.nonsales;
    format Salary salrange. Gender $gender.;
 run;
 title;
+
+
 /*6. ReviewChapter6material*/
 /*7. Exercises:Chapter6.2,Level2,5.Subsetting Observations Based on Three Conditions*/
   /*a.Write a DATA step to create work.delays using orion.orders as input.*/
@@ -440,11 +502,11 @@ run;
 /*12.Exercises: Chapter 10.1 Level 2*/
 /*3.Concatenating Data Sets with Variables of Different Lengths and Types*/
   /*a.Open p110e03. Submit the PROC CONTENTS steps or explore the data sets interactively to complete the table below by filling in attribute information for each variable in each data set.
-                   |     code               Company             ContactType                         
-                   | Type  |  Length      Type    Length        Type    Length                                      
-orion.charities    |       |
-orion.us_suppliers |       |
-orion.consultants  |       |                                                            */     
+                   |     code       |    Company     | ContactType   |                                      
+                   | Type  | Length | Type  | Length | Type | Length |                                      
+orion.charities    | char  |   6    | char  |   40   | char |   10   |
+orion.us_suppliers | char  |   6    | char  |   30   | char |   1    |
+orion.consultants  | char  |   6    | char  |   30   | char |   8    |   */     
 proc contents data=orion.charities;
 run;
 proc contents data=orion.us_suppliers;
