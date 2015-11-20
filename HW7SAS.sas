@@ -1,4 +1,5 @@
 /*SAS Programming 1 Course PDF*/
+/*Comments are under the codes*/
 
 %let path=/folders/myfolders/Data_One;
 libname orion "/folders/myfolders/Data_One";
@@ -16,7 +17,7 @@ The second statement, a LIBNAME statement, associates the libref, orion, with th
 /* b.Submit a PROC CONTENTS step to generate a list of all members in the orion library.*/
 proc contents data=orion._all_ nods;
 run;
-/*Using data=orion._all_ nods to get a data set that has all members in the orion library.
+/*Using _all_ nods to get a list of all members in the orion library.
 proc contents will list the properties of the data set*/
 /*What is the name of the last member listed? US_SUPPLIERS */
 
@@ -312,7 +313,7 @@ proc print data=orion.sales label noobs;
 run;
 /*Using proc print to display orion.sales data without obs column.*/
 /*Using where statement to select only Employee_ID First_Name Last_Name Job_Title Salary and Hire_Date columns*/
-/*Using label statement to to display descriptive column headings instead of variable names*/
+/*Using label statement to display descriptive column headings instead of variable names*/
 /*Using format statement to write Salary with a leading dollar sign and a comma that separates every three digits, the total format width is 10, no decimal places; and Hire_Date in monyy7 format(OCT2007).*/
 title;
 /*Using null title statement to cancel all titles*/
@@ -327,7 +328,8 @@ data Q1Birthdays;
    BirthMonth=month(Birth_Date);
    if BirthMonth le 3;
 run;
-
+/*Create Q1Birthdays data set by data statement from orion.employee_payroll.*/
+/*Create variable BirthMonth put the month of Birth_Date into it, and select the obersavations that have birth month less than and equal to 3.*/
 
   /*b.Create a character format named $GENDER that displays gender codes as follows:*/
 proc format;
@@ -335,7 +337,7 @@ proc format;
       'F'='Female'
       'M'='Male';
 run;
-
+/*Using proc format to create character format named $GENDER that display F and M instead of female and male.*/
  
   /*c.Create a numeric format named MNAME that displays month numbers as follows:*/
 proc format;
@@ -344,17 +346,20 @@ proc format;
        2='February'
        3='March';
 run;
-
+/*Using proc format to create numeric format named MNAME that display 1,2,3 instead of January, February and March.*/
 
   /*d.Add a PROC PRINT step to display the data set, applying these two user-defined formats to the Employee_Gender and BirthMonth variables, respectively.*/
 title 'Employees with Birthdays in Q1';
+/*Using title statement to create title as show in the report.*/
 proc print data=Q1Birthdays;
    var Employee_ID Employee_Gender BirthMonth;
    format Employee_Gender $gender.
           BirthMonth mname.;
 run; 
+/*Using proc print to display Q1Birthdays data, and using var statement to only display Employee_ID Employee_Gender and BirthMonth */
+/*Using format statement to format Employee_Gender by $gender and format BirthMonth by mname*/
 title;  
-
+/*Using null title statement to cancel all titles*/
 
   /*e.Submit the program to produce the following report. The results contain 113 observations.*/
 
@@ -366,7 +371,7 @@ proc print data=orion.nonsales;
    title1 'Salary and Gender Values';
    title2 'for Non-Sales Employees';
 run;
-
+/*Using proc print to display orion.nonsales data with title1 and title2 at the top, and using var statement to display only Employee_ID, Job_Title, Salary and Gender columns.*/
 
   /*b.Create a character format named $GENDER that displays gender codes as follows:*/
 proc format;
@@ -374,7 +379,7 @@ proc format;
                  'M'='Male'
                other='Invalid code';
 run;
- 
+/*Using proc format to create character format named $GENDER that display F, M and other instead of female, male and Invalid code.*/ 
  
   /*c.Create a numeric format named SALRANGE that displays salary ranges as follows:*/
 proc format;
@@ -383,18 +388,21 @@ proc format;
       100000-500000='$100,000 or more'
               other='Invalid salary';
 run;
- 
+/*Using proc format to create numeric format named SALRANGE that display data as show in exercise.*/ 
  
   /*d.In the PROC PRINT step, apply these two user-defined formats to the Gender and Salary variables, respectively. Submit the program to produce the following report:Partial PROC PRINT Output*/
 title1 'Salary and Gender Values';
 title2 'for Non-Sales Employees';
-
+/*Using title statement to create title1 as show in the report.*/
+/*Using title statement to create title2 as show in the report.*/
 proc print data=orion.nonsales;
    var Employee_ID Job_Title Salary Gender;
    format Salary salrange. Gender $gender.;
 run;
+/*Using proc print to display orion.nonsales data, and using var statement to only display Employee_ID, Job_Title, Salary and Gender */
+/*Using format statement to format Gender by $gender and format Salary by salrange*/
 title;
-
+/*Using null title statement to cancel all titles*/
 
 /*6. ReviewChapter6material*/
 /*7. Exercises:Chapter6.2,Level2,5.Subsetting Observations Based on Three Conditions*/
@@ -416,12 +424,23 @@ data work.delays;
    format Order_Date Delivery_Date mmddyy10.;
    keep Employee_ID Customer_ID Order_Date Delivery_Date Order_Month;
 run;  
+/*Using data statement to create a data set work.delays from orion.orders*/
+/*Create a variable Order_Month which is the month of Order_Date.*/
+/*Using where statement to select obersavations that Delivery_Date values are more than four days beyond Order_Date and Employee_ID values are equal to 99999999*/
+/*Using keep to display only Employee_ID, Customer_ID, Order_Date, Delivery_Date, and Order_Month*/
+/*Using label statement to display descriptive column headings instead of variable names*/
+/*Uisng format statement to format Order_Date and Delivery_Date in mmddyy10 format(MM/DD/YYYY).*/
+
   /*g.Add a PROC CONTENTS step to verify that the labels and formats were stored permanently.*/
 proc contents data=work.delays;
 run;
+/*Using proc contencts to display the new data set work.delays, the labels and formats were stored permanently*/
+
   /*h.Write a PROC PRINT step to create the report below. Results should contain nine observations.*/
 proc print data=work.delays;
 run;
+/*Using proc print to display data work.delays as show in exercise*/
+
 /*8. ReviewChapter9material*/
 /*9. Exercises:Chapter9.1Level2,2.Creating New Variables*/
   /*a.Write a DATA step that reads orion.customer to create work.birthday.*/
@@ -439,9 +458,16 @@ data work.birthday;
    keep Customer_Name Birth_Date Bday2012 BdayDOW2012 Age2012;
    format Bday2012 date9. Age2012 3.;
 run;
+/*Using data statement to create a data set work.birthday from orion.customer*/
+/*Create three variable Bday2012, BdayDOW2012 and Age2012 as described.*/
+/*Using keep to display only Customer_Name, Birth_Date, Bday2012, BdayDOW2012, and Age2012*/
+/*Uisng format statement to format Bday2012 in date9. format and Age2012 with 3 total format width and no decimal places*/
+
   /*e.Write a PROC PRINT step to create the report below. The results should contain 77 observations. Partial PROC PRINT Output*/
 proc print data=work.birthday;
 run;
+/*Using proc print to display data work.birthday as show in exercise*/
+
 /*10.Exercises: Chapter 9.2 Level 2*/
 /*6.Creating Multiple Variables in Conditional Processing*/
   /*a.Write a DATA step that reads orion.customer_dim to create work.season.*/
@@ -449,7 +475,8 @@ run;
     The value of Promo is based on the quarter in which the customer was born.
     • If the customer was born in the first quarter, then Promo is equal to Winter.
     • If the customer was born in the second quarter, then Promo is equal to Spring.
-    • If the customer was born in the third quarter, then Promo is equal to Summer. • If the customer was born in the fourth quarter, then Promo is equal to Fall.
+    • If the customer was born in the third quarter, then Promo is equal to Summer. 
+    • If the customer was born in the fourth quarter, then Promo is equal to Fall.
     The value of Promo2 is based on the customer’s age:
     • For young adults, whose age is between 18 and 25, set Promo2 equal to YA. • For seniors, aged 65 or older, set Promo2 equal to Senior.
     • Promo2 should have a missing value for all other customers.*/
@@ -467,11 +494,19 @@ data work.season;
    keep Customer_FirstName Customer_LastName Customer_BirthDate   
         Customer_Age Promo Promo2; 
 run;
+/*Using data statement to create a new data set work.season from orion.customer_dim*/
+/*Create two new variables promo and promo2, using if...then statement to create promo and promo2 for each observation*/
+/*Using length statement to define the type and length of variable promo2*/
+/*Create a variable Quarter, let it be the quarter of Customer_BirthDate, insert winter, spring, summer or fall into promo when quarter=1,2,3 or 4*/
+/*Using if...then statement to insert ya and senior into promo2 in certain situation*/
+/*Using keep statement to display only Customer_FirstName, Customer_LastName, Customer_BirthDate, Customer_Age, Promo and Promo2*/ 
+
   /*d.Create the report below. The results should include 77 observations. Partial PROC PRINT Output*/
 proc print data=work.season;
    var Customer_FirstName Customer_LastName Customer_BirthDate Promo 
        Customer_Age Promo2; 
 run;
+/*Using proc print to display the data work.season, using var statement to display only Customer_FirstName, Customer_LastName, Customer_BirthDate, Promo, Customer_Age and Promo2*/
 
 /*7.Creating Variables Unconditionally and Conditionally*/
   /*a.Write a DATA step that reads orion.orders to create work.ordertype.*/
@@ -495,9 +530,19 @@ data work.ordertype;
    end;
    drop Order_Type Employee_ID Customer_ID;
 run;
+/*Using data statement to create a new data set work.ordertype from orion.orders*/
+/*Create new variable DayOfWeek that is equal to the weekday of Order_Date*/
+/*Create two new variable type and saleads, using length statement to define the type and length of variable type and saleads*/
+/*Using if...then statement to insert retail, catalog or internet sale into type when order_type=1,2,3*/
+/*Using if...then statement to insert mail and email into saleads when order_type=2,3*/
+/*Using dorp statement to specifies the variables to exclude from the output data set.*/
+
+ 
   /*f.Create the report below. The results should contain 490 observations.Partial PROC PRINT Output*/
 proc print data=work.ordertype;
 run;
+/*Using proc print to display the data work.ordertype*/
+
 /*11.Review Chapter 10 material*/
 /*12.Exercises: Chapter 10.1 Level 2*/
 /*3.Concatenating Data Sets with Variables of Different Lengths and Types*/
@@ -506,35 +551,46 @@ run;
                    | Type  | Length | Type  | Length | Type | Length |                                      
 orion.charities    | char  |   6    | char  |   40   | char |   10   |
 orion.us_suppliers | char  |   6    | char  |   30   | char |   1    |
-orion.consultants  | char  |   6    | char  |   30   | char |   8    |   */     
+orion.consultants  | char  |   6    | char  |   30   | num  |   8    |   */     
 proc contents data=orion.charities;
 run;
 proc contents data=orion.us_suppliers;
 run;
-proc contents data=orion.us_suppliers;
+proc contents data=orion.consultants;
 run;
+/*Using proc contents to list the properties of the data set orion.charities, orion.us_suppliers and orion.consultants*/ 
+
   /*b.Write a DATA step to concatenate orion.charities and orion.us_suppliers, creating a temporary data set, contacts.*/
 data work.contacts;	
    set orion.charities orion.us_suppliers;
 run;
+/*Using data statement to create a new data set work.contacts that include the contents from orion.charities and orion.us_suppliers*/
+
   /*c.Submit a PROC CONTENTS step to examine work.contacts. */
 proc contents data=work.contacts;
 run;
+/*Using proc contents to list the properties of the data set work.contacts*/
 /*From which input data set were the variable attributes assigned? The first data set in the set statement, orion.charities. */  
+
   /*d.Write a DATA step to concatenate orion.us_suppliers and orion.charities, creating a temporary data set, contacts2. Note that these are the same data sets as the previous program, but they are in reverse order.*/
 data work.contacts2;	
    set orion.us_suppliers orion.charities;
 run;
+/*Using data statement to create a new data set work.contacts2 that include the contents from orion.us_suppliers and orion.charities*/
 
   /*e.Submit a PROC CONTENTS step to examine work.contacts2. */
 proc contents data=work.contacts2;
 run;
+/*Using proc contents to list the properties of the data set work.contacts2*/
 /*From which input data set were the variable attributes assigned? The first data set in the set statement, orion.us_suppliers. */
+
   /*f.Write a DATA step to concatenate orion.us_suppliers and orion.consultants, creating a temporary data set, contacts3.*/
 data work.contacts3;	
    set orion.us_suppliers orion.consultants;
 run;
+/*Using data statement to create a new data set work.contacts3 that include the contents from orion.us_suppliers and orion.consultants*/
 /*Why did the DATA step fail? Because ContactType has been defined as both character and numeric.*/
+
 /*13.Exercises: Chapter 10.3 Level 2*/
 /*5.Merging a Sorted Data Set and an Unsorted Data Set in a One-to-Many Merge*/
   /*a.Sort orion.product_list by Product_Level to create a new data set, work.product_list.*/
@@ -542,16 +598,23 @@ proc sort data=orion.product_list
           out=work.product_list;
    by Product_Level;
 run;  
+/*Using proc sort to sort orion.product_list by product_level and put the result in a new data set work.product_list*/ 
+ 
   /*b.Merge orion.product_level with the sorted data set. Create a new data set, work.listlevel, which includes only Product_ID, Product_Name, Product_Level, and Product_Level_Name.*/
 data work.listlevel;
    merge orion.product_level work.product_list ;
    by Product_Level;
    keep Product_ID Product_Name Product_Level Product_Level_Name;
 run;
+/*Using merge statement to orion.product_level work.product_list, and put the result into new data set work.listlevel and group work.listlevel by Product_Level*/  
+/*Using keep statement to only include Product_ID, Product_Name, Product_Level and Product_Level_Name in the new data set*/
+
   /*c.Create the report below, including only observations with Product Level equal to 3. The results should contain 13 observations.Partial PROC PRINT Output*/
 proc print data=work.listlevel noobs;
    where Product_Level=3;   
 run;
+/*Using proc print to display work.listlevel with out obs column*/
+/*Using where statement to only display observations with Product Level equal to 3*/
 
 /*14.Exercises: Chapter 10.4 Level 2*/
 /*8.Merging Using the IN= and RENAME= Options*/
@@ -560,6 +623,8 @@ proc sort data=orion.customer
           out=work.customer;
    by Country;
 run;
+/*Using proc sort to sort orion.customer by country and put the result in a new data set work.customer*/ 
+ 
   /*b.Write a DATA step to merge the resulting data set with orion.lookup_country by Country to create a new data set, work.allcustomer.
       In the orion.lookup_country data set, rename Start to Country and rename Label to Country_Name.
       Include only four variables: Customer_ID, Country, Customer_Name, and Country_Name.*/
@@ -569,9 +634,15 @@ data work.allcustomer;
    by Country;
    keep Customer_ID Country Customer_Name Country_Name;
 run;
+/*Using data statement to create a new data set work.allcustomer*/
+/*Using merge statement to merge work.customer and orion.lookup_country dataset together by country in new data set*/
+/*rename Start to Country and rename Label to Country_Name in the orion.lookup_country data set*/
+/*Using keep statement to display only Customer_ID, Country, Customer_Name, and Country_Name.*/
+ 
   /*c.Create the report below. The results should contain 308 observations. Partial PROC PRINT Output*/
 proc print data=work.allcustomer;
 run;
+/*Using proc print to display work.allcustomer*/
 
   /*d.Modify the DATA step to store only the observations that contain both customer information and country information. A subsetting IF statement that references IN= variables in the MERGE statement must be added.*/
 data work.allcustomer;
@@ -581,10 +652,13 @@ data work.allcustomer;
 	keep Customer_ID Country Customer_Name Country_Name;
 	if Cust=1 and Ctry=1;
 run;
+/*Using IN= data set option creates a variable that indicates whether the data set contributed to building the current observation*/
+/*Using if statement to select only the observations that contain both customer information and country information(when new variables equal to 1, means the data set contributed to building the current obeservations)*/
+
   /*e.Submit the program to create the report below. The results should contain 77 observations. Partial PROC PRINT Output*/
 proc print data=work.allcustomer;
 run;  
-  
+/*Using proc print to display work.allcustomer*/  
   
   
   
