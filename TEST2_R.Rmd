@@ -1,0 +1,151 @@
+---
+title: "test2"
+author: "Xinyue Li"
+date: "2015年11月29日"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Using the abalone data:
+```{r}
+#Download abalone Dataset and get ready for exam
+aburl = 'http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data'
+abnames = c('Sex','Length','Diameter','Height','Whole_wgt','Shucked_wgt','Viscera_wgt','Shell_wgt','Rings')
+abalone = read.table(aburl, header = F, sep = ',', col.names = abnames)
+```
+1. Take samples of 1%, 10%, 25%, 50%, 80%, and 100% of the data(4177). Calculate the min, max, mean and variance of the Whole_wgt column from each sample and store in a dataframe. There should be 6 columns and four rows in the dataframe (a column for each sample size and a row for each measure). Name the mean row SampleMean, the other rows appropriately, and the columns based on the % sample.
+```{r}
+#for this question, we will first 
+whole_wgt_sample<-function(data1,x,tolnum){
+  s<-data1[sample(length(data1), round(tolnum*x), replace = FALSE)]
+  sn<-c(min(s),max(s),mean(s),var(s))
+  sn
+}
+dataframe1<-function(data1){
+  samplesize<-c(.01,.1,.25,.5,.8,1)
+  q1<-data.frame(whole_wgt_sample(data1,samplesize[1],length(data1)),whole_wgt_sample(data1,samplesize[2],length(data1)),whole_wgt_sample(data1,samplesize[3],length(data1)),whole_wgt_sample(data1,samplesize[4],length(data1)),whole_wgt_sample(data1,samplesize[5],length(data1)),whole_wgt_sample(data1,samplesize[6],length(data1)))
+  rownames(q1)=c('SampleMin', 'SampleMax', 'SampleMean', 'SampleVar')
+  colnames(q1)<-c('1%sample','10%sample','25%sample','50%sample','80%sample','100%sample')
+  q1 #output dataframe q1
+}
+dataframe1(abalone$Whole_wgt)
+```
+2. Create a grid of histograms that contains all sample sizes.
+```{r}
+histg<-function(dataset,y){
+  hist(dataset,
+      main=paste('Histogram with ',round(y*100),'% sample'),
+      xlab='variable')
+  }
+gridhist1<-function(data1){
+  samplesize<-c(.01,.1,.25,.5,.8,1)
+  samplenum<-round(length(data1)*samplesize)
+  par(mfrow=c(2,3))
+  for (i in 1:(length(samplenum))){
+    s2<-c()
+    s2<-data1[sample(length(data1),samplenum[i],replace = FALSE)]
+    histg(s2,samplesize[i])
+  }
+}
+gridhist1(abalone$Whole_wgt)
+```
+3. Implement a loop that takes 1,000 samples at each of the sample sizes in 1 above (except the 100% sample!). Calculate a mean at each iteration and store the results in a dataframe. There should be four columns and 1,000 rows. Name the columns but NOT the rows.
+```{r}
+dataframe2<-function(data1){
+  samplesize<-c(.01,.1,.25,.5,.8,1)
+  a<-data.frame(c1=c(NA),c2=c(NA),c3=c(NA),c4=c(NA),c5=c(NA))
+  mean3<-c()
+  for (i in 1:(length(samplesize)-1)){
+    s<-c()
+    s<-data1[sample(length(data1), round(length(data1)*samplesize[i]), replace = FALSE)]
+    for (j in 1:1000){
+      a[j,i]<-s[sample(length(s),1,replace=FALSE)]
+    }
+    mean3[i]<-mean(a[,i])
+  }
+  colnames(a)<-c('1%sample','10%sample','25%sample','50%sample','80%sample')
+  a
+}
+dataframe2(abalone$Whole_wgt)
+```
+4. Create another grid of histograms that contains the four columns just created and include the 100% sample from 1. (HINT: You should create a function to solve 2 and reuse here).
+```{r}
+gridhist2<-function(data1){
+  size4<-c(0.01,0.1,0.25,0.5,0.8)
+  par(mfrow=c(2,3))
+  for (i in 1:5){
+    histg(dataframe2(data1)[,i],size4[i])
+  }
+  histg(data1,1)
+}
+gridhist2(abalone$Whole_wgt)
+```
+5. Calculate the min, max, mean and variance of each column from 3 and of the total dataset (the 100% sample). Append to the dataframe created in 1. Name the mean row ResampleMean and the others appropriately.
+```{r}
+dataframe3<-function(data1){
+  rea<-data.frame(c1=c(NA),c2=c(NA),c3=c(NA),c4=c(NA),c5=c(NA))
+  for (i in 1:5){
+    rea[1,i]<-min(dataframe2(data1)[,i])
+    rea[2,i]<-max(dataframe2(data1)[,i])
+    rea[3,i]<-mean(dataframe2(data1)[,i])
+    rea[4,i]<-var(dataframe2(data1)[,i])
+  }
+  q5<-data.frame(rea,whole_wgt_sample(data1,1,length(data1)))
+  rownames(q5)=c('ResampleMin', 'ResampleMax', 'ResampleMean', 'ResampleVar')
+  colnames(q5)<-c('1%sample','10%sample','25%sample','50%sample','80%sample','100%sample')
+  q5
+}
+dataframe3(abalone$Whole_wgt)
+```
+6. Create a single histogram of the 100% data and overlay and label lines that represent the 1%, 10%, 25%, 50%, and 80% SampleMean.
+```{r}
+histogram1<-function(data1){
+  par(mfrow=c(1,1))
+  nums<-c(1,10,25,50,80)
+  hist(data1,main=paste('Histogram with 100% sample'),xlab='variable')
+  for (i in 1:(length(dataframe1(data1)[3,])-1)){
+    abline(v=dataframe1(data1)[3,i],col=i+2)
+    mtext(paste('x=',nums[i],'% SampleMean'),at=-0.7+i*0.6,col=i+2)
+  }
+}
+histogram1(abalone$Whole_wgt)
+```
+7. Create a second histogram of the 100% data and overlay and label vertical lines that represent the 1%, 10%, 25%, 50%, and 80% ResampleMean.
+```{r}
+histogram2<-function(data1){
+  par(mfrow=c(1,1))
+  nums<-c(1,10,25,50,80)
+  hist(data1,main=paste('Histogram with 100% sample'),xlab='variable')
+  for (i in 1:(length(dataframe3(data1)[3,]))){
+    abline(v=dataframe3(data1)[3,i],col=i+2)
+    mtext(paste('x=',nums[i],'% ReSampleMean'),at=-0.7+i*0.7,col=i+2)
+  }
+}
+histogram2(abalone$Whole_wgt)
+```
+8. Now execute your code on diamonds$carat and faithful$eruptions.
+```{r}
+require(ggplot2)
+#execute functions on diamonds$carat
+dataframe1(diamonds$carat)
+gridhist1(diamonds$carat)
+dataframe2(diamonds$carat)
+gridhist2(diamonds$carat)
+dataframe3(diamonds$carat)
+histogram1(diamonds$carat)
+histogram2(diamonds$carat)
+#execute functions on faithful$eruptions
+dataframe1(faithful$eruptions)
+gridhist1(faithful$eruptions)
+dataframe2(faithful$eruptions)
+gridhist2(faithful$eruptions)
+dataframe3(faithful$eruptions)
+histogram1(faithful$eruptions)
+histogram2(faithful$eruptions)
+```
+9. Provide a brief explanation of what you observe in the measures and histograms as it relates to sample size and resampling.
+```{r}
+#When sample size become larger, the measures and histogrames will get more stable and closer to the measures and histogrames of full dataset
+#When we resampling the data, the meansures and histogrames will become more stable but won't be closer to the full dataset
+```
