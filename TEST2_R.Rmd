@@ -10,40 +10,41 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 Using the abalone data:
 ```{r}
 #Download abalone Dataset and get ready for exam
-aburl = 'http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data'
-abnames = c('Sex','Length','Diameter','Height','Whole_wgt','Shucked_wgt','Viscera_wgt','Shell_wgt','Rings')
-abalone = read.table(aburl, header = F, sep = ',', col.names = abnames)
+aburl = 'http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data' #store the dataset location into a variable aburl
+abnames = c('Sex','Length','Diameter','Height','Whole_wgt','Shucked_wgt','Viscera_wgt','Shell_wgt','Rings')#create a variable abnames and put column names in it 
+abalone = read.table(aburl, header = F, sep = ',', col.names = abnames) #create dataset ablane and read table from aburl web dataset without header, treat ',' as separator, and using the column names in abnames
 ```
 1. Take samples of 1%, 10%, 25%, 50%, 80%, and 100% of the data(4177). Calculate the min, max, mean and variance of the Whole_wgt column from each sample and store in a dataframe. There should be 6 columns and four rows in the dataframe (a column for each sample size and a row for each measure). Name the mean row SampleMean, the other rows appropriately, and the columns based on the % sample.
 ```{r}
-#for this question, we will first 
-whole_wgt_sample<-function(data1,x,tolnum){
-  s<-data1[sample(length(data1), round(tolnum*x), replace = FALSE)]
-  sn<-c(min(s),max(s),mean(s),var(s))
-  sn
+#for this question, we will first create a function whole_wgt_sample to take samples from the data as we want and calculate the min, max, mean and variance of the whole cholumn of sample we get. Then we use a function dataframe1 to put the results we get from whole_wgt_sample with 5 kinds of sample sizes together into a dataframe, rename the row and column names and output the dataframe.
+whole_wgt_sample<-function(data1,x,tolnum){ #create a functiin called whole_wgt_sample with data1, x and tolnum inputs. data1 means the data we use, x is the samplesize and tolnum is the total number of samples in data1
+  s<-data1[sample(length(data1), round(tolnum*x), replace = FALSE)] #create a variable s and use it to store selected sample from data1 with samplesize we want without replacement
+  sn<-c(min(s),max(s),mean(s),var(s)) #create a variable sn to store the min, max, mean and variance of s 
+  sn #output sn
 }
-dataframe1<-function(data1){
-  samplesize<-c(.01,.1,.25,.5,.8,1)
-  q1<-data.frame(whole_wgt_sample(data1,samplesize[1],length(data1)),whole_wgt_sample(data1,samplesize[2],length(data1)),whole_wgt_sample(data1,samplesize[3],length(data1)),whole_wgt_sample(data1,samplesize[4],length(data1)),whole_wgt_sample(data1,samplesize[5],length(data1)),whole_wgt_sample(data1,samplesize[6],length(data1)))
-  rownames(q1)=c('SampleMin', 'SampleMax', 'SampleMean', 'SampleVar')
-  colnames(q1)<-c('1%sample','10%sample','25%sample','50%sample','80%sample','100%sample')
+dataframe1<-function(data1){ #create a function dataframe1 with input data1 which means the data we use
+  samplesize<-c(.01,.1,.25,.5,.8,1) #create variable samplesize and put the percentage of samplesize we want in it 
+  q1<-data.frame(whole_wgt_sample(data1,samplesize[1],length(data1)),whole_wgt_sample(data1,samplesize[2],length(data1)),whole_wgt_sample(data1,samplesize[3],length(data1)),whole_wgt_sample(data1,samplesize[4],length(data1)),whole_wgt_sample(data1,samplesize[5],length(data1)),whole_wgt_sample(data1,samplesize[6],length(data1))) #create dataframe q1 and put the output of whole_wgt_sample with 5 kinds of sample sizes together into it
+  rownames(q1)=c('SampleMin', 'SampleMax', 'SampleMean', 'SampleVar') #name q1 rows as required
+  colnames(q1)<-c('1%sample','10%sample','25%sample','50%sample','80%sample','100%sample') #name q1 columns as required
   q1 #output dataframe q1
 }
-dataframe1(abalone$Whole_wgt)
+dataframe1(abalone$Whole_wgt) #run function dataframe1 with abalone$Whole_wgt data
 ```
 2. Create a grid of histograms that contains all sample sizes.
 ```{r}
-histg<-function(dataset,y){
-  hist(dataset,
-      main=paste('Histogram with ',round(y*100),'% sample'),
-      xlab='variable')
+#Because this question is very similar to the question 4, we will create a small function that can be used in both questions first. This function will help to draw a well-organized histogram for the data we use. Then we create function gridhist1 to draw a grid of histograms for each sample size by using par() and a for loop function
+histg<-function(dataset,y){ #create a function histg with input dataset and y, dataset is the data we use and y is the samplesize
+  hist(dataset, #using hist() to draw hisgtogram for dataset 
+      main=paste('Histogram with ',round(y*100),'% sample'), #create the title for histogram and mention input samplesize 
+      xlab='variable') #simple name the xlab variable, because we will use it to other datas
   }
-gridhist1<-function(data1){
-  samplesize<-c(.01,.1,.25,.5,.8,1)
-  samplenum<-round(length(data1)*samplesize)
-  par(mfrow=c(2,3))
-  for (i in 1:(length(samplenum))){
-    s2<-c()
+gridhist1<-function(data1){ #create a function gridhist1 with input data1
+  samplesize<-c(.01,.1,.25,.5,.8,1) ##create variable samplesize and put the percentage of samplesize we want in it 
+  samplenum<-round(length(data1)*samplesize) #create variable samplenum it is the number of samples we need to take for each samplesize
+  par(mfrow=c(2,3)) #using par() to arrange the histogram in 2 rows and 3 columns
+  for (i in 1:(length(samplenum))){ #using for loop to go through from the first sample number to the last
+    s2<-c() #create a variable s2 and make it empty, it is the we will us it as a temporary variable to draw histogram.
     s2<-data1[sample(length(data1),samplenum[i],replace = FALSE)]
     histg(s2,samplesize[i])
   }
@@ -127,7 +128,7 @@ histogram2(abalone$Whole_wgt)
 8. Now execute your code on diamonds$carat and faithful$eruptions.
 ```{r}
 require(ggplot2)
-#execute functions on diamonds$carat
+#execute functions on diamonds$carat, all works well
 dataframe1(diamonds$carat)
 gridhist1(diamonds$carat)
 dataframe2(diamonds$carat)
@@ -135,7 +136,7 @@ gridhist2(diamonds$carat)
 dataframe3(diamonds$carat)
 histogram1(diamonds$carat)
 histogram2(diamonds$carat)
-#execute functions on faithful$eruptions
+#execute functions on faithful$eruptions, all works well
 dataframe1(faithful$eruptions)
 gridhist1(faithful$eruptions)
 dataframe2(faithful$eruptions)
