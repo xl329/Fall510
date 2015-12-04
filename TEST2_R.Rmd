@@ -16,114 +16,121 @@ abalone = read.table(aburl, header = F, sep = ',', col.names = abnames) #create 
 ```
 1. Take samples of 1%, 10%, 25%, 50%, 80%, and 100% of the data(4177). Calculate the min, max, mean and variance of the Whole_wgt column from each sample and store in a dataframe. There should be 6 columns and four rows in the dataframe (a column for each sample size and a row for each measure). Name the mean row SampleMean, the other rows appropriately, and the columns based on the % sample.
 ```{r}
-#for this question, we will first create a function whole_wgt_sample to take samples from the data as we want and calculate the min, max, mean and variance of the whole cholumn of sample we get. Then we use a function dataframe1 to put the results we get from whole_wgt_sample with 5 kinds of sample sizes together into a dataframe, rename the row and column names and output the dataframe.
+#for this question, we will first create a function whole_wgt_sample to take samples from the data as we want and calculate the min, max, mean and variance of the whole cholumn of sample we get. 
+#Then we use a function dataframe1 to put the results we get from whole_wgt_sample with 5 kinds of sample sizes together into a dataframe, rename the row and column names and output the dataframe.
 whole_wgt_sample<-function(data1,x,tolnum){ #create a functiin called whole_wgt_sample with data1, x and tolnum inputs. data1 means the data we use, x is the samplesize and tolnum is the total number of samples in data1
   s<-data1[sample(length(data1), round(tolnum*x), replace = FALSE)] #create a variable s and use it to store selected sample from data1 with samplesize we want without replacement
   sn<-c(min(s),max(s),mean(s),var(s)) #create a variable sn to store the min, max, mean and variance of s 
   sn #output sn
-}
+} #finish function
 dataframe1<-function(data1){ #create a function dataframe1 with input data1 which means the data we use
   samplesize<-c(.01,.1,.25,.5,.8,1) #create variable samplesize and put the percentage of samplesize we want in it 
   q1<-data.frame(whole_wgt_sample(data1,samplesize[1],length(data1)),whole_wgt_sample(data1,samplesize[2],length(data1)),whole_wgt_sample(data1,samplesize[3],length(data1)),whole_wgt_sample(data1,samplesize[4],length(data1)),whole_wgt_sample(data1,samplesize[5],length(data1)),whole_wgt_sample(data1,samplesize[6],length(data1))) #create dataframe q1 and put the output of whole_wgt_sample with 5 kinds of sample sizes together into it
   rownames(q1)=c('SampleMin', 'SampleMax', 'SampleMean', 'SampleVar') #name q1 rows as required
   colnames(q1)<-c('1%sample','10%sample','25%sample','50%sample','80%sample','100%sample') #name q1 columns as required
   q1 #output dataframe q1
-}
+} #finish function
 dataframe1(abalone$Whole_wgt) #run function dataframe1 with abalone$Whole_wgt data
 ```
 2. Create a grid of histograms that contains all sample sizes.
 ```{r}
-#Because this question is very similar to the question 4, we will create a small function that can be used in both questions first. This function will help to draw a well-organized histogram for the data we use. Then we create function gridhist1 to draw a grid of histograms for each sample size by using par() and a for loop function
+#Because this question is very similar to the question 4, we will create a small function that can be used in both questions first. 
+#This function will help to draw a well-organized histogram for the data we use. Then we create function gridhist1 to draw a grid of histograms for each sample size by using par() and a for loop function
 histg<-function(dataset,y){ #create a function histg with input dataset and y, dataset is the data we use and y is the samplesize
   hist(dataset, #using hist() to draw hisgtogram for dataset 
       main=paste('Histogram with ',round(y*100),'% sample'), #create the title for histogram and mention input samplesize 
       xlab='variable') #simple name the xlab variable, because we will use it to other datas
-  }
+}
 gridhist1<-function(data1){ #create a function gridhist1 with input data1
   samplesize<-c(.01,.1,.25,.5,.8,1) ##create variable samplesize and put the percentage of samplesize we want in it 
   samplenum<-round(length(data1)*samplesize) #create variable samplenum it is the number of samples we need to take for each samplesize
   par(mfrow=c(2,3)) #using par() to arrange the histogram in 2 rows and 3 columns
   for (i in 1:(length(samplenum))){ #using for loop to go through from the first sample number to the last
     s2<-c() #create a variable s2 and make it empty, it is the we will us it as a temporary variable to draw histogram.
-    s2<-data1[sample(length(data1),samplenum[i],replace = FALSE)]
-    histg(s2,samplesize[i])
+    s2<-data1[sample(length(data1),samplenum[i],replace = FALSE)] #let s2 be the samples selected from data1 with certain samplesize and without replacement 
+    histg(s2,samplesize[i]) #using function histg() to draw individual histogram for the certain samplesize
   }
-}
-gridhist1(abalone$Whole_wgt)
+}#finish function
+gridhist1(abalone$Whole_wgt) #run function gridhist1() with abalone$Whole_wgt
 ```
 3. Implement a loop that takes 1,000 samples at each of the sample sizes in 1 above (except the 100% sample!). Calculate a mean at each iteration and store the results in a dataframe. There should be four columns and 1,000 rows. Name the columns but NOT the rows.
 ```{r}
-dataframe2<-function(data1){
-  samplesize<-c(.01,.1,.25,.5,.8,1)
-  a<-data.frame(c1=c(NA),c2=c(NA),c3=c(NA),c4=c(NA),c5=c(NA))
-  mean3<-c()
-  for (i in 1:(length(samplesize)-1)){
-    s<-c()
-    s<-data1[sample(length(data1), round(length(data1)*samplesize[i]), replace = FALSE)]
-    for (j in 1:1000){
-      a[j,i]<-s[sample(length(s),1,replace=FALSE)]
-    }
-    mean3[i]<-mean(a[,i])
-  }
-  colnames(a)<-c('1%sample','10%sample','25%sample','50%sample','80%sample')
-  a
-}
-dataframe2(abalone$Whole_wgt)
+#for this question, we will create a function to take 1000 samples for each sample size, store in dataframe, and calculate the means for every 1000 samples and store in a variable
+dataframe2<-function(data1){ #create a function dataframe2() with input data1
+  samplesize<-c(.01,.1,.25,.5,.8,1) #create variable samplesize and put the percentage of samplesize we want in it 
+  a<-data.frame(c1=c(NA),c2=c(NA),c3=c(NA),c4=c(NA),c5=c(NA))#create an empty dataframe a with 5 columns
+  mean3<-c()#create variable mean3, make it empty, we will put mean for 1000 samples in it
+  for (i in 1:(length(samplesize)-1)){ #using for loop to go through all samplesize except 100% sample
+    s<-c() #create variable s, make it empty
+    s<-data1[sample(length(data1), round(length(data1)*samplesize[i]), replace = FALSE)]#let s be the samples selected from data1 with certain samplesize and without replacement
+    for (j in 1:1000){ #using for loop to repeat the following code 1000 times
+      a[j,i]<-s[sample(length(s),1,replace=FALSE)] #select 1 sample from s and put it into dataframe a
+    }#end the second for loop
+    mean3[i]<-mean(a[,i]) #put mean for each iteration into mean3
+  }#end the first for loop
+  colnames(a)<-c('1%sample','10%sample','25%sample','50%sample','80%sample') #name the columns for a as required
+  a #output a
+} #finish function
+dataframe2(abalone$Whole_wgt) #run dataframe2() with abalone$Whole_wgt
 ```
 4. Create another grid of histograms that contains the four columns just created and include the 100% sample from 1. (HINT: You should create a function to solve 2 and reuse here).
 ```{r}
-gridhist2<-function(data1){
-  size4<-c(0.01,0.1,0.25,0.5,0.8)
-  par(mfrow=c(2,3))
-  for (i in 1:5){
-    histg(dataframe2(data1)[,i],size4[i])
-  }
-  histg(data1,1)
-}
-gridhist2(abalone$Whole_wgt)
+#In this question, we will create a function gridhist2(), using the function histg() to create the grid of histograms for all columns in a and 100% sample
+gridhist2<-function(data1){ #create a function gridhist2() with input data1
+  size4<-c(0.01,0.1,0.25,0.5,0.8) #create a variable size4 with samplesize in we used for a
+  par(mfrow=c(2,3)) #using par() to arrange the histogram in 2 rows and 3 columns
+  for (i in 1:5){ #using for loop to go through all values in size4
+    histg(dataframe2(data1)[,i],size4[i]) #using histg() to plot histograms for all columns in a 
+  } #end for loop
+  histg(data1,1) #using histg() to plot histogram for 100% sample 
+} #finish function
+gridhist2(abalone$Whole_wgt) #run gridhist2() with abalone$Whole_wgt
 ```
 5. Calculate the min, max, mean and variance of each column from 3 and of the total dataset (the 100% sample). Append to the dataframe created in 1. Name the mean row ResampleMean and the others appropriately.
 ```{r}
-dataframe3<-function(data1){
-  rea<-data.frame(c1=c(NA),c2=c(NA),c3=c(NA),c4=c(NA),c5=c(NA))
-  for (i in 1:5){
-    rea[1,i]<-min(dataframe2(data1)[,i])
-    rea[2,i]<-max(dataframe2(data1)[,i])
-    rea[3,i]<-mean(dataframe2(data1)[,i])
-    rea[4,i]<-var(dataframe2(data1)[,i])
-  }
-  q5<-data.frame(rea,whole_wgt_sample(data1,1,length(data1)))
-  rownames(q5)=c('ResampleMin', 'ResampleMax', 'ResampleMean', 'ResampleVar')
-  colnames(q5)<-c('1%sample','10%sample','25%sample','50%sample','80%sample','100%sample')
-  q5
-}
-dataframe3(abalone$Whole_wgt)
+#we will create a function dataframe3 to calculate min, max, mean and variance of each column in dataframe a and the 100% sample, and put them into a dataframe
+dataframe3<-function(data1){ #create function dataframe3 with input data1
+  rea<-data.frame(c1=c(NA),c2=c(NA),c3=c(NA),c4=c(NA),c5=c(NA)) #create an empty dataframe rea with 5 columns
+  for (i in 1:5){ #using for loop to go through all columns in rea
+    rea[1,i]<-min(dataframe2(data1)[,i]) #calculate min of rea columns
+    rea[2,i]<-max(dataframe2(data1)[,i]) #calculate max of rea columns
+    rea[3,i]<-mean(dataframe2(data1)[,i]) #calculate mean of rea columns
+    rea[4,i]<-var(dataframe2(data1)[,i]) #calculate var of rea columns
+  }#end for loop
+  q5<-data.frame(rea,whole_wgt_sample(data1,1,length(data1))) #create dataframe q5 and put rea and 100% sample together in q5
+  rownames(q5)=c('ResampleMin', 'ResampleMax', 'ResampleMean', 'ResampleVar')#name q5 rows as required
+  colnames(q5)<-c('1%sample','10%sample','25%sample','50%sample','80%sample','100%sample') #name q5 columns as required
+  q5 #output dataframe q5
+} #finish function
+dataframe3(abalone$Whole_wgt)#run dataframe3() with abalone$Whole_wgt
 ```
 6. Create a single histogram of the 100% data and overlay and label lines that represent the 1%, 10%, 25%, 50%, and 80% SampleMean.
 ```{r}
-histogram1<-function(data1){
-  par(mfrow=c(1,1))
-  nums<-c(1,10,25,50,80)
-  hist(data1,main=paste('Histogram with 100% sample'),xlab='variable')
-  for (i in 1:(length(dataframe1(data1)[3,])-1)){
-    abline(v=dataframe1(data1)[3,i],col=i+2)
-    mtext(paste('x=',nums[i],'% SampleMean'),at=-0.7+i*0.6,col=i+2)
-  }
-}
-histogram1(abalone$Whole_wgt)
+#we will create a function to create a single histogram of 100% data and overlay and label lines that represent the 1%, 10%, 25%, 50%, and 80% SampleMean
+histogram1<-function(data1){ #create a function histogram1 with input data1
+  par(mfrow=c(1,1)) #using par() to arrange the one single histogram in plots area
+  nums<-c(1,10,25,50,80) #create a variable nums and just use it in creatning the xtext for each lines represent the 1%, 10%, 25%, 50%, and 80% SampleMean in histogram
+  hist(data1,main=paste('Histogram with 100% sample'),xlab='variable')#using hist() to create histogram with data1, name the title 'Histogram with 100% sample' and name x label variable
+  for (i in 1:(length(dataframe1(data1)[3,])-1)){#using for loop to go through all samplemean in q1 except 100% samplemean
+    abline(v=dataframe1(data1)[3,i],col=i+2)#draw vertical line for each samplemean with different color
+    mtext(paste('x=',nums[i],'% SampleMean'),at=-0.7+i*0.6,col=i+2)#using mtext to write text x=i% SampleMean for each vertical line with certain color in histogram, and using at to put them seperate 
+  } #end for loop
+} #finish function
+histogram1(abalone$Whole_wgt)#run histogram1() with abalone$Whole_wgt
 ```
 7. Create a second histogram of the 100% data and overlay and label vertical lines that represent the 1%, 10%, 25%, 50%, and 80% ResampleMean.
 ```{r}
-histogram2<-function(data1){
-  par(mfrow=c(1,1))
-  nums<-c(1,10,25,50,80)
-  hist(data1,main=paste('Histogram with 100% sample'),xlab='variable')
-  for (i in 1:(length(dataframe3(data1)[3,]))){
-    abline(v=dataframe3(data1)[3,i],col=i+2)
-    mtext(paste('x=',nums[i],'% ReSampleMean'),at=-0.7+i*0.7,col=i+2)
-  }
-}
-histogram2(abalone$Whole_wgt)
+#we will create a function to create a single histogram of 100% data and overlay and label lines that represent the 1%, 10%, 25%, 50%, and 80% ResampleMean
+histogram2<-function(data1){ #create function histogram2 with input data1
+  par(mfrow=c(1,1)) #using par() to arrange the one single histogram in plots area
+  nums<-c(1,10,25,50,80)#create a variable nums and just use it in creatning the xtext for each lines represent the 1%, 10%, 25%, 50%, and 80% resampleMean in histogram
+  hist(data1,main=paste('Histogram with 100% sample'),xlab='variable')#using hist() to create histogram with data1, name the title 'Histogram with 100% sample' and name x label variable
+  for (i in 1:(length(dataframe3(data1)[3,])-1)){#using for loop to go through all resamplemean in q5 except 100% resamplemean
+    abline(v=dataframe3(data1)[3,i],col=i+2)#draw vertical line for each resamplemean with different color
+    mtext(paste('x=',nums[i],'% ReSampleMean'),at=-0.7+i*0.7,col=i+2)#using mtext to write text x=i% ReampleMean for each vertical line with certain color in histogram, and using at to put them seperate 
+  }#end for loop
+}#finish function
+histogram2(abalone$Whole_wgt)#run histogram2() with abalone$Whole_wgt
 ```
 8. Now execute your code on diamonds$carat and faithful$eruptions.
 ```{r}
@@ -147,6 +154,7 @@ histogram2(faithful$eruptions)
 ```
 9. Provide a brief explanation of what you observe in the measures and histograms as it relates to sample size and resampling.
 ```{r}
-#When sample size become larger, the measures and histogrames will get more stable and closer to the measures and histogrames of full dataset
-#When we resampling the data, the meansures and histogrames will become more stable but won't be closer to the full dataset
+#By comparing SampleMean and ReampleMean, gridhist1 and histogram1: When sample size become larger, the measures and histograms will get more stable and closer to the measures and histograms of full dataset
+#By comparing SampleVar and ReampleVar, gridhist1 and histogram2:When resampling the data for 1000 times, the measures and histograms will become more stable but won't be closer to the full dataset
+#When the sample size become larger and resampling the data for 1000 times, the measures and histograms will become more stable and closer to the measures and histogram of full dataset. 
 ```
